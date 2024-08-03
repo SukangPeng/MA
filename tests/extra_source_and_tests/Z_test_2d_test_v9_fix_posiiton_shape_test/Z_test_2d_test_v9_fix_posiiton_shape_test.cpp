@@ -44,10 +44,10 @@ Real mu_f = rho0_f * U_f * channel_width / Re; /**< Dynamics viscosity. */
 //----------------------------------------------------------------------
 //	Global parameters on the solid properties
 //----------------------------------------------------------------------
-Real rho0_s = 1265.0;
-Real poisson = 0.45;
-Real Youngs_modulus = 5e4;
-Real physical_viscosity = 200.0;
+Real rho0_s = 10.0; /**< Reference density.*/
+Real poisson = 0.4; /**< Poisson ratio.*/
+Real Ae = 1.4e3;    /**< Normalized Youngs Modulus. */
+Real Youngs_modulus = Ae * rho0_f * U_f * U_f;
 //----------------------------------------------------------------------
 //	define geometry of SPH bodies
 //----------------------------------------------------------------------
@@ -144,13 +144,13 @@ int main(int ac, char *av[])
     //----------------------------------------------------------------------
     FluidBody water_block(sph_system, makeShared<WaterBlock>("WaterBody"));
     water_block.defineMaterial<WeaklyCompressibleFluid>(rho0_f, c_f, mu_f);
-    ParticleBuffer<ReserveSizeFactor> inlet_particle_buffer(0.5);
+    ParticleBuffer<ReserveSizeFactor> inlet_particle_buffer(1.0);
     water_block.generateParticlesWithReserve<BaseParticles, Lattice>(inlet_particle_buffer);
 
     SolidBody vessel_wall(sph_system, makeShared<VesselWall>("VesselWall"));
     vessel_wall.defineAdaptationRatios(1.15, 2.0);
     vessel_wall.defineBodyLevelSetShape()->writeLevelSet(sph_system);
-    vessel_wall.defineMaterial<NeoHookeanSolid>(rho0_s, Youngs_modulus, poisson);
+    vessel_wall.defineMaterial<SaintVenantKirchhoffSolid>(rho0_s, Youngs_modulus, poisson);
     (!sph_system.RunParticleRelaxation() && sph_system.ReloadParticles())
         ? vessel_wall.generateParticles<BaseParticles, Reload>(vessel_wall.getName())
         : vessel_wall.generateParticles<BaseParticles, Lattice>();

@@ -26,9 +26,7 @@ Real domain_bound_right = 3.5;   /**< Domain Bound length right part. */
 Real domain_bound_left = 3.5;    /**< Domain Bound length left part. */
 Real domain_bound_height = 8;    /**< Domain Bound height. */
 Real domain_bound_height1 = 0.5; /**< Domain Bound height1. */
-
 Real channel_width = 0.6; /**< Channel width. */
-
 Real resolution_ref = 0.07;            /**< Reference resolution. */
 Real BW = resolution_ref * 4.0;        /**< Boundary width, determined by specific layer of boundary particles. */
 Real DL_sponge = resolution_ref * 4.0; /**< Sponge region to impose inflow condition. */
@@ -62,7 +60,6 @@ class WaterBlock : public MultiPolygonShape
         multi_polygon_.addAPolygonFromFile(vessel_inner, ShapeBooleanOps::add);
     }
 };
-
 class VesselWall : public MultiPolygonShape
 {
   public:
@@ -161,7 +158,6 @@ int main(int ac, char *av[])
 
     BodyStatesRecordingToVtp write_fixed_to_vtp(fixed);
     ReloadParticleIO write_fixed_reload_files(fixed);
-
     write_fixed_to_vtp.writeToFile(0);
     write_fixed_reload_files.writeToFile(0);
     //----------------------------------------------------------------------
@@ -233,9 +229,7 @@ int main(int ac, char *av[])
     Dynamics1Level<solid_dynamics::Integration2ndHalf> vessel_wall_stress_relaxation_second_half(vessel_wall_inner);
 
     ReduceDynamics<solid_dynamics::AcousticTimeStepSize> vessel_wall_computing_time_step_size(vessel_wall);
-
     // Constrain
-
     BodyRegionByParticle fixed_base(vessel_wall, makeShared<MultiPolygonShape>(createFixedBaseShape()));
     SimpleDynamics<FixBodyPartConstraint> constraint_fixed_base(fixed_base);
     //----------------------------------------------------------------------
@@ -415,6 +409,5 @@ int main(int ac, char *av[])
     {
         write_water_kinetic_energy.testResult();
     }
-
     return 0;
 }
